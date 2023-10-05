@@ -164,9 +164,9 @@ def main():
         # Set random or assortative mating
         if r_y == 0 :
             n_am = 0
-            n_random = 1
+            n_random = 20
         else :
-            n_am = 1
+            n_am = 20
             n_random = 0
 
         # Generate initial genotype data
@@ -213,9 +213,9 @@ def main():
             # Set random or assortative mating
             if r_y == 0 :
                 n_am = 0
-                n_random = 1
+                n_random = 20
             else :
-                n_am = 1
+                n_am = 20
                 n_random = 0
             # Generate initial genotype data
             haps , maps , snp_ids , alleles , positions , chroms = simulate_first_gen(
