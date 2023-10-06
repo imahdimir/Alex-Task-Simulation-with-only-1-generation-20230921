@@ -1,9 +1,10 @@
-## Manually add by me
+# Manual
 venv
 .idea
-temp_data/
-paper
-GitHubData
+icon
+/simulations/
+
+
 
 # General
 .DS_Store
