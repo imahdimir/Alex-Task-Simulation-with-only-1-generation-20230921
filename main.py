@@ -10,7 +10,6 @@ from snipar.simulate import *
 import snipar.pgs as pgs
 from snipar.gtarray import gtarray
 from numba import njit , prange
-import numpy as np
 
 @njit(parallel = False)
 def trio_gwas(y , gts_matrix) :
@@ -50,7 +49,7 @@ def estimate_direct_effect_pgi(pheno ,
                                father_indices ,
                                mother_indices
                                ) :
-    ## Compute genotypes
+    # Compute genotypes
     gts_matrix = np.zeros((new_haps[0].shape[0] * 2 , 2 , new_haps[0].shape[2]))
     proband_genotypes = np.sum(new_haps[0] , axis = 3)
     gts_matrix[: , 0] = proband_genotypes.reshape((proband_genotypes.shape[
@@ -63,7 +62,8 @@ def estimate_direct_effect_pgi(pheno ,
             haps[0][mother_indices , 1 , : , :] , axis = 2)
     gts_matrix[np.arange(1 , gts_matrix.shape[0] , 2) , 1] = gts_matrix[
         np.arange(0 , gts_matrix.shape[0] , 2) , 1]
-    ## Estimate direct effects
+
+    # Estimate direct effects
     # Mean normalize
     y = pheno.gts[: , 0]
     y = y - np.mean(y)
@@ -92,20 +92,21 @@ def pgi_analysis(a ,
                  h2f_se ,
                  outprefix
                  ) :
-    ## Extract phenotype from pedigree
+    # Extract phenotype from pedigree
     ped = ped[1 : , :]  # Remove header
     # Find last generation
     ngen = int(ped[ped.shape[0] - 1 , 0].split('_')[0])
     ped = ped[[x.split('_')[0] == str(ngen) for x in ped[: , 0]] , :]
-    ## Extract relevant pieces of information
+    # Extract relevant pieces of information
     # pedigree
     pedigree = ped[: , 0 :4]
     # phenotype
     pheno = gtarray(ped[: , 5].astype(float).reshape(ped.shape[0] , 1) ,
                     ids = ped[: , 1])
     pheno.scale()
+
     # Examine different noise levels
-    for vratio in [0 , 1 , 10 , 100] :
+    for vratio in [1] :  # [0 , 1 , 10 , 100] :
         a_est = a + np.random.normal(0 ,
                                      np.sqrt(vratio) * np.std(a) ,
                                      size = a.shape)
@@ -118,7 +119,7 @@ def pgi_analysis(a ,
         # Estimate rk
         rk = np.corrcoef(pg.gts[: , 2] , pg.gts[: , 1])[0 , 1]
         rk_se = (1 - rk ** 2) / np.sqrt(pg.gts.shape[0] - 2)
-        ## Estimate direct effect and average NTC
+        # Estimate direct effect and average NTC
         # scale
         pg.scale()
         # Estimate two-generation model
@@ -150,8 +151,7 @@ def extract_true_params(V) :
     params['h2f'] = h2f
     return params
 
-
-def main():
+def main() :
     # Fixed parameters
     nfam = 30000
     n_causal = 1000
@@ -159,8 +159,9 @@ def main():
     h2 = 0.5
     beta_vert = 0
 
-    ###### No indirect effects #######
+    # No indirect effects #######
     for r_y in [0 , 0.25 , 0.5 , 0.75] :
+
         # Set random or assortative mating
         if r_y == 0 :
             n_am = 0
@@ -171,30 +172,33 @@ def main():
 
         # Generate initial genotype data
         haps , maps , snp_ids , alleles , positions , chroms = simulate_first_gen(
-            nfam ,
-            n_causal ,
-            maf = maf)
+                nfam ,
+                n_causal ,
+                maf = maf)
+
         # Run simulation
         new_haps , haps , father_indices , mother_indices , ibd , ped , a , V = forward_sim(
-            haps ,
-            maps ,
-            n_random ,
-            n_am ,
-            True ,
-            n_causal ,
-            h2 ,
-            r_y = r_y)
+                haps ,
+                maps ,
+                n_random ,
+                n_am ,
+                True ,
+                n_causal ,
+                h2 ,
+                r_y = r_y)
+
         # Save output
         outprefix = 'simulations/r_y_{}'.format(r_y)
         print('Saving to ' + outprefix)
         np.savetxt(outprefix + '_VCS.txt' , V , fmt = '%s')
         np.savetxt(outprefix + '.ped' , ped , fmt = '%s')
         np.savetxt(outprefix + '_causal.txt' , a , fmt = '%s')
+
         # Extract true parameters
         params = extract_true_params(V)
+
         # Perform direct effect PGI analysis
-        print(
-            'Estimating parameters using direct effect PGIs with different noise levels')
+        print('Estimating parameters using direct effect PGIs with different noise levels')
         pg = pgi_analysis(a ,
                           ped ,
                           new_haps ,
@@ -205,7 +209,7 @@ def main():
                           0 ,
                           outprefix)
 
-    ######## Indirect effects #########
+    # Indirect effects #########
     # Varying parameters
     v_indir = 0.25
     for r_direct_indirect in [0 , 0.5 , 1] :
@@ -219,27 +223,27 @@ def main():
                 n_random = 0
             # Generate initial genotype data
             haps , maps , snp_ids , alleles , positions , chroms = simulate_first_gen(
-                nfam ,
-                n_causal ,
-                maf = maf)
+                    nfam ,
+                    n_causal ,
+                    maf = maf)
             # Run simulation
             new_haps , haps , father_indices , mother_indices , ibd , ped , a , V = forward_sim(
-                haps ,
-                maps ,
-                n_random ,
-                n_am ,
-                True ,
-                n_causal ,
-                h2 ,
-                v_indirect = v_indir ,
-                r_direct_indirect = r_direct_indirect ,
-                r_y = r_y ,
-                beta_vert = beta_vert)
+                    haps ,
+                    maps ,
+                    n_random ,
+                    n_am ,
+                    True ,
+                    n_causal ,
+                    h2 ,
+                    v_indirect = v_indir ,
+                    r_direct_indirect = r_direct_indirect ,
+                    r_y = r_y ,
+                    beta_vert = beta_vert)
             # Save output
             outprefix = 'simulations/v_indir_{}_r_dir_indir_{}_r_y_{}'.format(
-                v_indir ,
-                r_direct_indirect ,
-                r_y)
+                    v_indir ,
+                    r_direct_indirect ,
+                    r_y)
             print('Saving to ' + outprefix)
             np.savetxt(outprefix + '_VCS.txt' , V , fmt = '%s')
             np.savetxt(outprefix + '.ped' , ped , fmt = '%s')
@@ -247,8 +251,7 @@ def main():
             # Extract true parameters
             params = extract_true_params(V)
             # Perform direct effect PGI analysis
-            print(
-                'Estimating parameters using direct effect PGIs with different noise levels')
+            print('Estimating parameters using direct effect PGIs with different noise levels')
             pg = pgi_analysis(a[: , 0] ,
                               ped ,
                               new_haps ,
@@ -268,7 +271,6 @@ def main():
                               params['h2f'] ,
                               0 ,
                               outprefix + '_population')
-
 
 if __name__ == '__main__' :
     main()

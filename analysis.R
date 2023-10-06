@@ -1,4 +1,4 @@
-setwd('~/Dropbox/intergenerational/simulations/')
+setwd('/Users/mahdi/Dropbox/1-GitHub/Alex-Task-Simulation-with-only-1-generation-20230921/1/simulations')
 
 ### General ggplot2 scatterplot function ###
 scatter_plot = function(x,x_SE,y,y_SE,pch,pch_name,color,color_name,xlab,ylab,outfile,hlines=TRUE){
@@ -155,3 +155,8 @@ for (i in 1:dim(results)[1]){
   if (results$v_indir[i]==0){
     results[i,3+1:11] = c(vcs[1,'v_g'],vcs[ngen,'v_g'],0,0,0,0,vcs[ngen,'v_y'],
                          vcs[ngen,'r_delta'],0,0,0)
+  }
+}
+
+ped = read.table('/Users/mahdi/Dropbox/1-GitHub/Alex-Task-Simulation-with-only-1-generation-20230921/1/simulations/r_y_0.5.ped',sep='',header=T,stringsAsFactors = F)
+vcs = read.table('/Users/mahdi/Dropbox/1-GitHub/Alex-Task-Simulation-with-only-1-generation-20230921/1/simulations/r_y_0_VCS.txt', header=T,stringsAsFactors = F)
