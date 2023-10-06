@@ -10,6 +10,16 @@ from snipar.simulate import *
 import snipar.pgs as pgs
 from snipar.gtarray import gtarray
 from numba import njit , prange
+from pathlib import Path
+
+sim_dir = '../../simulations_Alex'
+
+# Fixed parameters
+nfam = 30000
+n_causal = 1000
+maf = 0.5
+h2 = 0.5
+beta_vert = 0
 
 @njit(parallel = False)
 def trio_gwas(y , gts_matrix) :
@@ -151,13 +161,10 @@ def extract_true_params(V) :
     params['h2f'] = h2f
     return params
 
-def main() :
-    # Fixed parameters
-    nfam = 30000
-    n_causal = 1000
-    maf = 0.5
-    h2 = 0.5
-    beta_vert = 0
+def main(ngen = 20) :
+    sdir = sim_dir + '/ngen_{}'.format(ngen)
+    if not Path(sdir).exists() :
+        Path(sdir).mkdir(parents = True)
 
     # No indirect effects #######
     for r_y in [0 , 0.25 , 0.5 , 0.75] :
@@ -165,9 +172,9 @@ def main() :
         # Set random or assortative mating
         if r_y == 0 :
             n_am = 0
-            n_random = 1
+            n_random = ngen
         else :
-            n_am = 1
+            n_am = ngen
             n_random = 0
 
         # Generate initial genotype data
@@ -188,7 +195,7 @@ def main() :
                 r_y = r_y)
 
         # Save output
-        outprefix = 'simulations/r_y_{}'.format(r_y)
+        outprefix = sdir + '/r_y_{}'.format(r_y)
         print('Saving to ' + outprefix)
         np.savetxt(outprefix + '_VCS.txt' , V , fmt = '%s')
         np.savetxt(outprefix + '.ped' , ped , fmt = '%s')
@@ -217,9 +224,9 @@ def main() :
             # Set random or assortative mating
             if r_y == 0 :
                 n_am = 0
-                n_random = 1
+                n_random = ngen
             else :
-                n_am = 1
+                n_am = ngen
                 n_random = 0
             # Generate initial genotype data
             haps , maps , snp_ids , alleles , positions , chroms = simulate_first_gen(
@@ -240,7 +247,7 @@ def main() :
                     r_y = r_y ,
                     beta_vert = beta_vert)
             # Save output
-            outprefix = 'simulations/v_indir_{}_r_dir_indir_{}_r_y_{}'.format(
+            outprefix = sdir + '/v_indir_{}_r_dir_indir_{}_r_y_{}'.format(
                     v_indir ,
                     r_direct_indirect ,
                     r_y)
@@ -273,5 +280,9 @@ def main() :
                               outprefix + '_population')
 
 if __name__ == '__main__' :
-    main()
-    print('Done')
+    for ng in [20 , 1 , 5] :
+        print('Starting ng = {}'.format(ng))
+        main(ng)
+        print('Done with ng = {}'.format(ng))
+
+    print('Done!')
