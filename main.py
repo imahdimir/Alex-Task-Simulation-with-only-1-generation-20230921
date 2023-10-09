@@ -205,7 +205,8 @@ def main(ngen = 20) :
         params = extract_true_params(V)
 
         # Perform direct effect PGI analysis
-        print('Estimating parameters using direct effect PGIs with different noise levels')
+        print(
+            'Estimating parameters using direct effect PGIs with different noise levels')
         pg = pgi_analysis(a ,
                           ped ,
                           new_haps ,
@@ -258,7 +259,8 @@ def main(ngen = 20) :
             # Extract true parameters
             params = extract_true_params(V)
             # Perform direct effect PGI analysis
-            print('Estimating parameters using direct effect PGIs with different noise levels')
+            print(
+                'Estimating parameters using direct effect PGIs with different noise levels')
             pg = pgi_analysis(a[: , 0] ,
                               ped ,
                               new_haps ,
@@ -280,9 +282,9 @@ def main(ngen = 20) :
                               outprefix + '_population')
 
 if __name__ == '__main__' :
-    for ng in [20 , 1 , 5] :
-        print('Starting ng = {}'.format(ng))
+    for ng in [5] :  # [20 , 1 , 5] :
+        print('\n' , '*** Starting ng = {} ***'.format(ng) , '\n')
         main(ng)
-        print('Done with ng = {}'.format(ng))
+        print('\n' , '*** Done with ng = {} ***'.format(ng) , '\n')
 
     print('Done!')
