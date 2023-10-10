@@ -1,4 +1,5 @@
-setwd('~/Dropbox/1-GitHub/Alex-Task-Simulation-with-only-1-generation-20230921/ngen_1')
+setwd('~/Dropbox/1-GitHub/Alex-Task-Simulation-with-only-1-generation-20230921/ngen_20')
+
 
 ### General ggplot2 scatterplot function ###
 
@@ -180,5 +181,4 @@ v1_eta_delta = scatter_plot(pgi_results_true$v_eta_delta,pgi_results_true$v_eta_
                             color=pgi_results_true$r_dir_indir,color_name='r_direct_indirect',
                             xlab='True v_eta_delta',ylab='Estimated v_eta_delta (noise=1)',
                             outfile='plots/v_eta_delta_v1.png')
-
 
