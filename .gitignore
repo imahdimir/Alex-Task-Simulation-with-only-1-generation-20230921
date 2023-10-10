@@ -2,7 +2,10 @@
 venv
 .idea
 icon
+Icon?
 /simulations/
+/snipar/
+/ngen_1/
 
 
 
@@ -195,4 +198,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 ~$data.xlsx
-Icon
+Icon

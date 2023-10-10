@@ -1,15 +1,16 @@
 """
 
-    I just changed the number of generations to 1 instead of 20 and got
-    the results through docker and addiotional analysis using the R code
-    provided by Alex to plot the results just like the paper.
+    I re-done the simulation of Alex's paper with 20, 1 and 5 generations.
+    I did only for a noise/signal ratio = 1 only like the paper.
+    Addiotional analysis is done using the R code provided by Alex
+    to plot the results just like the paper.
 
     """
 
 from snipar.simulate import *
 import snipar.pgs as pgs
 from snipar.gtarray import gtarray
-from numba import njit , prange
+from numba import njit
 from pathlib import Path
 
 sim_dir = '../../simulations_Alex'
@@ -116,7 +117,8 @@ def pgi_analysis(a ,
     pheno.scale()
 
     # Examine different noise levels
-    for vratio in [1] :  # [0 , 1 , 10 , 100] :
+    for vratio in [0 , 1] :  # [0 , 1 , 10 , 100] :
+
         a_est = a + np.random.normal(0 ,
                                      np.sqrt(vratio) * np.std(a) ,
                                      size = a.shape)
@@ -161,11 +163,12 @@ def extract_true_params(V) :
     params['h2f'] = h2f
     return params
 
-def main(ngen = 20) :
+def main(ngen) :
     sdir = sim_dir + '/ngen_{}'.format(ngen)
     if not Path(sdir).exists() :
         Path(sdir).mkdir(parents = True)
 
+    """
     # No indirect effects #######
     for r_y in [0 , 0.25 , 0.5 , 0.75] :
 
@@ -205,8 +208,7 @@ def main(ngen = 20) :
         params = extract_true_params(V)
 
         # Perform direct effect PGI analysis
-        print(
-            'Estimating parameters using direct effect PGIs with different noise levels')
+        print('Estimating parameters using direct effect PGIs with different noise levels')
         pg = pgi_analysis(a ,
                           ped ,
                           new_haps ,
@@ -216,12 +218,14 @@ def main(ngen = 20) :
                           params['h2f'] ,
                           0 ,
                           outprefix)
+    """
 
     # Indirect effects #########
     # Varying parameters
     v_indir = 0.25
     for r_direct_indirect in [0 , 0.5 , 1] :
         for r_y in [0 , 0.25 , 0.5 , 0.75] :
+
             # Set random or assortative mating
             if r_y == 0 :
                 n_am = 0
@@ -229,6 +233,21 @@ def main(ngen = 20) :
             else :
                 n_am = ngen
                 n_random = 0
+
+            outprefix = sdir + '/v_indir_{}_r_dir_indir_{}_r_y_{}'.format(
+                    v_indir ,
+                    r_direct_indirect ,
+                    r_y)
+
+            print('r_dir_indir = {} , r_y = {}'.format(r_direct_indirect , r_y))
+
+            if Path(outprefix + '_pgi_v0.am_adj_pars.txt').exists() and Path(
+                    outprefix + '_pgi_v1.am_adj_pars.txt').exists() and Path(
+                    outprefix + '_population_pgi_v0.am_adj_pars.txt').exists() and Path(
+                    outprefix + '_population_pgi_v1.am_adj_pars.txt').exists() :
+                print('skip')
+                continue
+
             # Generate initial genotype data
             haps , maps , snp_ids , alleles , positions , chroms = simulate_first_gen(
                     nfam ,
@@ -247,20 +266,17 @@ def main(ngen = 20) :
                     r_direct_indirect = r_direct_indirect ,
                     r_y = r_y ,
                     beta_vert = beta_vert)
+
             # Save output
-            outprefix = sdir + '/v_indir_{}_r_dir_indir_{}_r_y_{}'.format(
-                    v_indir ,
-                    r_direct_indirect ,
-                    r_y)
             print('Saving to ' + outprefix)
             np.savetxt(outprefix + '_VCS.txt' , V , fmt = '%s')
             np.savetxt(outprefix + '.ped' , ped , fmt = '%s')
             np.savetxt(outprefix + '_causal.txt' , a , fmt = '%s')
             # Extract true parameters
             params = extract_true_params(V)
+
             # Perform direct effect PGI analysis
-            print(
-                'Estimating parameters using direct effect PGIs with different noise levels')
+            print('Estimating parameters using direct effect PGIs with different noise levels')
             pg = pgi_analysis(a[: , 0] ,
                               ped ,
                               new_haps ,
@@ -270,6 +286,7 @@ def main(ngen = 20) :
                               params['h2f'] ,
                               0 ,
                               outprefix)
+
             # Population effect PGI
             pg = pgi_analysis(a[: , 0] + a[: , 1] ,
                               ped ,
@@ -282,7 +299,7 @@ def main(ngen = 20) :
                               outprefix + '_population')
 
 if __name__ == '__main__' :
-    for ng in [5] :  # [20 , 1 , 5] :
+    for ng in [20] :  # [20 , 1 , 5] :
         print('\n' , '*** Starting ng = {} ***'.format(ng) , '\n')
         main(ng)
         print('\n' , '*** Done with ng = {} ***'.format(ng) , '\n')
