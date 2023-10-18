@@ -1,4 +1,4 @@
-setwd('~/Dropbox/1-GitHub/Alex-Task-Simulation-with-only-1-generation-20230921/ngen_20')
+setwd('/Users/mahdi/Downloads/ngen_1')
 
 
 ### General ggplot2 scatterplot function ###
@@ -66,8 +66,6 @@ compute_corrs=function(pedigree){
 }
 
 ###################################### Read results #########################################
-statistic = c('v_g','v_g_eq','v_eg','v_eg_eq','c_ge','c_ge_eq','v_y_eq',
-               'r_sib','r_cousin','r_po','r_gpar')
 
 results = data.frame(r_y = rep(c(0, 0.25, 0.5, 0.75),4),
                      v_indir=c(rep(0,4),rep(0.25,12)),
@@ -156,7 +154,7 @@ v1_r = scatter_plot(pgi_results_true$r,pgi_results_true$r_SE,
                     pch=as.factor(pgi_results_true$r_dir_indir),pch_name='r_direct_indir',
                     color=pgi_results_true$r_y,color_name='phenotype correlation',
                     xlab='True r (r_delta)',ylab='Estimated r (noise=1) (r^_{delta})',
-                    outfile='plots/r_v1.png')
+                    outfile='plots/r_v1.pdf')
 
 # plot b in fig 4 in manuscript
 v1_h2_eq = scatter_plot(results$v_g_eq[results$r_y>0]/results$v_y_eq[results$r_y>0],0,
@@ -164,7 +162,7 @@ v1_h2_eq = scatter_plot(results$v_g_eq[results$r_y>0]/results$v_y_eq[results$r_y
                         pch=results$v_indir[results$r_y>0]==0,pch_name='v_indir==0',
                         color=results$r_y[results$r_y>0],color_name='phenotype correlation',
                         xlab='True h2_eq',ylab='Estimated h2_eq (noise=1)',
-                        outfile='plots/h2_eq_v1.png')
+                        outfile='plots/h2_eq_v1.pdf')
 
 # plot c in fig 4 in manuscript
 v1_alpha_delta = scatter_plot(pgi_results_true$alpha_delta,pgi_results_true$alpha_delta_SE,
@@ -172,7 +170,7 @@ v1_alpha_delta = scatter_plot(pgi_results_true$alpha_delta,pgi_results_true$alph
                               pch=pgi_results_true$v_indir==0,pch_name='v_indirect==0',
                               color=pgi_results_true$r_dir_indir,color_name='r_direct_indirect',
                               xlab='True alpha_delta',ylab='Estimated alpha_delta (noise=1)',
-                              outfile='plots/alpha_delta_v1.png')
+                              outfile='plots/alpha_delta_v1.pdf')
 
 # plot d in fig 4 in manuscript
 v1_eta_delta = scatter_plot(pgi_results_true$v_eta_delta,pgi_results_true$v_eta_delta_SE,
@@ -180,5 +178,5 @@ v1_eta_delta = scatter_plot(pgi_results_true$v_eta_delta,pgi_results_true$v_eta_
                             pch=pgi_results_true$v_indir==0,pch_name='v_indirect==0',
                             color=pgi_results_true$r_dir_indir,color_name='r_direct_indirect',
                             xlab='True v_eta_delta',ylab='Estimated v_eta_delta (noise=1)',
-                            outfile='plots/v_eta_delta_v1.png')
+                            outfile='plots/v_eta_delta_v1.pdf')
 

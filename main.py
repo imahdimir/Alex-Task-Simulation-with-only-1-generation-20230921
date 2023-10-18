@@ -3,15 +3,16 @@
     I re-done the simulation of Alex's paper with 20, 1 and 5 generations.
     I did only for a noise/signal ratio = 1 only like the paper.
     Addiotional analysis is done using the R code provided by Alex
-    to plot the results just like the paper.
+    to plot the results like the paper.
 
     """
 
-from snipar.simulate import *
-import snipar.pgs as pgs
-from snipar.gtarray import gtarray
-from numba import njit
 from pathlib import Path
+
+import snipar.pgs as pgs
+from numba import njit
+from snipar.gtarray import gtarray
+from snipar.simulate import *
 
 sim_dir = '../../simulations_Alex'
 
@@ -168,7 +169,6 @@ def main(ngen) :
     if not Path(sdir).exists() :
         Path(sdir).mkdir(parents = True)
 
-    """
     # No indirect effects #######
     for r_y in [0 , 0.25 , 0.5 , 0.75] :
 
@@ -208,7 +208,8 @@ def main(ngen) :
         params = extract_true_params(V)
 
         # Perform direct effect PGI analysis
-        print('Estimating parameters using direct effect PGIs with different noise levels')
+        print(
+            'Estimating parameters using direct effect PGIs with different noise levels')
         pg = pgi_analysis(a ,
                           ped ,
                           new_haps ,
@@ -218,7 +219,6 @@ def main(ngen) :
                           params['h2f'] ,
                           0 ,
                           outprefix)
-    """
 
     # Indirect effects #########
     # Varying parameters
@@ -299,7 +299,7 @@ def main(ngen) :
                               outprefix + '_population')
 
 if __name__ == '__main__' :
-    for ng in [20] :  # [20 , 1 , 5] :
+    for ng in [20 , 1] :
         print('\n' , '*** Starting ng = {} ***'.format(ng) , '\n')
         main(ng)
         print('\n' , '*** Done with ng = {} ***'.format(ng) , '\n')
