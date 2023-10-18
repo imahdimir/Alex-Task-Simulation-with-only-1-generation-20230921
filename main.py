@@ -1,11 +1,9 @@
 """
-
-    I re-done the simulation of Alex's paper with 20, 1 and 5 generations.
+    I re-done the simulation of Alex's paper with 20 and 1 generations.
     I did only for a noise/signal ratio = 1 only like the paper.
     Addiotional analysis is done using the R code provided by Alex
     to plot the results like the paper.
-
-    """
+"""
 
 from pathlib import Path
 
@@ -208,8 +206,7 @@ def main(ngen) :
         params = extract_true_params(V)
 
         # Perform direct effect PGI analysis
-        print(
-            'Estimating parameters using direct effect PGIs with different noise levels')
+        print('Estimating parameters using direct effect PGIs with different noise levels')
         pg = pgi_analysis(a ,
                           ped ,
                           new_haps ,
@@ -276,7 +273,8 @@ def main(ngen) :
             params = extract_true_params(V)
 
             # Perform direct effect PGI analysis
-            print('Estimating parameters using direct effect PGIs with different noise levels')
+            print(
+                'Estimating parameters using direct effect PGIs with different noise levels')
             pg = pgi_analysis(a[: , 0] ,
                               ped ,
                               new_haps ,
